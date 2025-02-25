@@ -44,7 +44,12 @@ DEFAULT_SETTINGS = {'rules': DEFAULT_RULES,
                     'instant_mode': False,
                     'num_close_matches': 3,
                     'env': {'LC_ALL': 'C', 'LANG': 'C', 'GIT_TRACE': '1'},
-                    'excluded_search_path_prefixes': []}
+                    'excluded_search_path_prefixes': [],
+                    'intelligence': False,
+                    'model_provider': 'openai',
+                    'openai_base_url': 'https://api.openai.com',
+                    'openai_model': 'o3-mini',
+                    'openai_temperature': 0.7}
 
 ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
                'THEFUCK_EXCLUDE_RULES': 'exclude_rules',
@@ -60,7 +65,13 @@ ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
                'THEFUCK_REPEAT': 'repeat',
                'THEFUCK_INSTANT_MODE': 'instant_mode',
                'THEFUCK_NUM_CLOSE_MATCHES': 'num_close_matches',
-               'THEFUCK_EXCLUDED_SEARCH_PATH_PREFIXES': 'excluded_search_path_prefixes'}
+               'THEFUCK_EXCLUDED_SEARCH_PATH_PREFIXES': 'excluded_search_path_prefixes',
+               'THEFUCK_INTELLIGENCE': 'intelligence',
+               'THEFUCK_MODEL_PROVIDER': 'model_provider',
+               'OPENAI_API_KEY': 'openai_api_key',
+               'OPENAI_BASE_URL': 'openai_base_url',
+               'OPENAI_MODEL': 'openai_model',
+               'OPENAI_TEMPERATURE': 'openai_temperature'}
 
 SETTINGS_HEADER = u"""# The Fuck settings file
 #

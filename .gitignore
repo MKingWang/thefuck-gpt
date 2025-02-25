@@ -61,3 +61,5 @@ target/
 
 # vim temporary files
 .*.swp
+
+Pipfile
