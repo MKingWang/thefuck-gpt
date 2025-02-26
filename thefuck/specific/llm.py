@@ -7,6 +7,7 @@ import sys
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 from thefuck.conf import settings
+# import traceback
 
 class LLMCache:
     """Local SQLite caching implementation."""
@@ -45,7 +46,7 @@ class LLMFactory:
                 'model': lambda: settings.openai_model,
                 'api_key': lambda: settings.openai_api_key,
                 'base_url': lambda: settings.openai_base_url,
-                'temperature': lambda: settings.openai_temperature,
+                'temperature': lambda: settings.temperature,
             }
         },
         'anthropic': {
@@ -53,6 +54,13 @@ class LLMFactory:
                 'model': lambda: settings.anthropic_model,
                 'api_key': lambda: settings.anthropic_api_key,
                 'temperature': lambda: settings.anthropic_temperature,
+            }
+        },
+        'deepseek': {
+            'model_configs': {
+                'model': lambda: settings.deepseek_model,
+                'api_key': lambda: settings.deepseek_api_key,
+                'temperature': lambda: settings.temperature,
             }
         }
     }
@@ -110,5 +118,7 @@ def get_fix_suggestion(context: Any) -> str:
         return response.content
         
     except Exception as e:
-        print(f"LLM调用失败: {str(e)}")
+        # traceback.print_exc(file=sys.stderr)
+        print(f"LLM call failed: {str(e)}", flush=True, file=sys.stderr)
+        print("AI-based fix suggestion is not available. Falling back to non-AI command fix mode.", flush=True, file=sys.stderr)
         return ""

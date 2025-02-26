@@ -49,7 +49,8 @@ DEFAULT_SETTINGS = {'rules': DEFAULT_RULES,
                     'model_provider': 'openai',
                     'openai_base_url': 'https://api.openai.com',
                     'openai_model': 'o3-mini',
-                    'openai_temperature': 0.7}
+                    'deepseek_model': 'deepseek-chat',
+                    'temperature': 0.7}
 
 ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
                'THEFUCK_EXCLUDE_RULES': 'exclude_rules',
@@ -71,7 +72,10 @@ ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
                'OPENAI_API_KEY': 'openai_api_key',
                'OPENAI_BASE_URL': 'openai_base_url',
                'OPENAI_MODEL': 'openai_model',
-               'OPENAI_TEMPERATURE': 'openai_temperature'}
+               'OPENAI_TEMPERATURE': 'temperature',
+               'DEEPSEEK_API_KEY': 'deepseek_api_key',
+               'DEEPSEEK_MODEL': 'deepseek_model',
+               'DEEPSEEK_TEMPERATURE': 'temperature'}
 
 SETTINGS_HEADER = u"""# The Fuck settings file
 #

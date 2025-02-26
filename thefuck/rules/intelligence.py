@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from thefuck.specific.llm import get_fix_suggestion
 from thefuck.types import Command
+from thefuck.conf import settings
 
 # Dangerous command pattern filtering
 DANGEROUS_PATTERNS = [
@@ -16,6 +17,8 @@ DANGEROUS_PATTERNS = [
 
 def match(command: Command) -> bool:
     """Match all commands not handled by other rules."""
+    if not settings.intelligence:
+        return False
     return command.script_parts[0] not in ['fuck', 'thefuck']
 
 def get_new_command(command: Command) -> list[str]:
@@ -31,13 +34,12 @@ def get_new_command(command: Command) -> list[str]:
         "timestamp": datetime.now().isoformat()
     }
 
-    
     suggestion = get_fix_suggestion(context)
-
+    
     if suggestion and is_safe_suggestion(suggestion):
         return [suggestion] 
     else:
-        return fallback_to_original_rules(command)
+        return []
 
     
 def is_safe_suggestion(suggestion: str) -> bool:
@@ -52,13 +54,7 @@ def is_safe_suggestion(suggestion: str) -> bool:
     for pattern in DANGEROUS_PATTERNS:
         if re.search(pattern, suggestion, re.IGNORECASE):
             return False
-            
         
     return True
-
-
-def fallback_to_original_rules(command: Command) -> list:
-    """Fallback to the original rules system."""
-    return [command.script]
 
 priority = 10
