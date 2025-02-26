@@ -47,7 +47,7 @@ DEFAULT_SETTINGS = {'rules': DEFAULT_RULES,
                     'excluded_search_path_prefixes': [],
                     'intelligence': False,
                     'model_provider': 'openai',
-                    'openai_base_url': 'https://api.openai.com',
+                    'openai_base_url': 'https://api.openai.com/',
                     'openai_model': 'o3-mini',
                     'deepseek_model': 'deepseek-chat',
                     'temperature': 0.7}

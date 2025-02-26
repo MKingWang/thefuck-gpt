@@ -33,7 +33,7 @@ elif (3, 0) < version < (3, 5):
 
 VERSION = '3.32'
 
-install_requires = ['psutil', 'colorama', 'six']
+install_requires = ['psutil', 'colorama', 'six','langchain-core','langchain','langchain-openai','langchain-anthropic','langchain-deepseek']
 extras_require = {':python_version<"3.4"': ['pathlib2'],
                   ':python_version<"3.3"': ['backports.shutil_get_terminal_size'],
                   ':python_version<="2.7"': ['decorator<5', 'pyte<0.8.1'],
@@ -49,7 +49,8 @@ else:
     scripts = []
     entry_points = {'console_scripts': [
                   'thefuck = thefuck.entrypoints.main:main',
-                  'fuck = thefuck.entrypoints.not_configured:main']}
+                  'fuck = thefuck.entrypoints.not_configured:main',
+                  'fuckgenerate=thefuck.entrypoints.generate_command:main']}
 
 setup(name='thefuck',
       version=VERSION,

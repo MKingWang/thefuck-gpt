@@ -12,7 +12,6 @@ from ..shells import shell  # noqa: E402
 from .alias import print_alias  # noqa: E402
 from .fix_command import fix_command  # noqa: E402
 
-
 def main():
     parser = Parser()
     known_args = parser.parse(sys.argv)
@@ -22,9 +21,6 @@ def main():
     elif known_args.version:
         logs.version(get_installation_version(),
                      sys.version.split()[0], shell.info())
-    # It's important to check if an alias is being requested before checking if
-    # `TF_HISTORY` is in `os.environ`, otherwise it might mess with subshells.
-    # Check https://github.com/nvbn/thefuck/issues/921 for reference
     elif known_args.alias:
         print_alias(known_args)
     elif known_args.command or 'TF_HISTORY' in os.environ:
