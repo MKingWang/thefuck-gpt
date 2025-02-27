@@ -50,7 +50,7 @@ else:
     entry_points = {'console_scripts': [
                   'thefuck = thefuck.entrypoints.main:main',
                   'fuck = thefuck.entrypoints.not_configured:main',
-                  'fuckgen=thefuck.entrypoints.generate_command:main']}
+                  'thefuck_generate = thefuck.entrypoints.generate_command:main']}
 
 setup(name='thefuck',
       version=VERSION,

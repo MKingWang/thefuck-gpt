@@ -33,7 +33,8 @@ def handle_generate_command(args):
     try:
         response = input()
         if response.strip() == '':
-            os.system(command)
+            # os.system(command)
+            print(command)
     except KeyboardInterrupt:
         sys.stderr.write('\nAborted\n')
     
