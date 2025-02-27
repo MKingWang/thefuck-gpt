@@ -9,3 +9,8 @@ pypandoc
 pytest-benchmark
 pytest-docker-pexpect
 twine
+langchain-core
+langchain-openai
+langchain-deepseek
+langchain-anthropic
+langchain-community

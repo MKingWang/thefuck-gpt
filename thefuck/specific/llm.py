@@ -68,7 +68,6 @@ class LLMFactory:
 
     @classmethod
     def create(cls) -> Any:
-        print(f"Creating LLM model using provider: {os.environ.get('THEFUCK_MODEL_PROVIDER', settings.model_provider)}", file=sys.stderr)
         provider = os.environ.get('THEFUCK_MODEL_PROVIDER', settings.model_provider)
         if provider not in cls._supported_providers:
             raise ValueError(f"Unsupported LLM provider: {provider}")
