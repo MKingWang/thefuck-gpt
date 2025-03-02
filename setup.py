@@ -31,7 +31,7 @@ elif (3, 0) < version < (3, 5):
           ' ({}.{} detected).'.format(*version))
     sys.exit(-1)
 
-VERSION = '3.32'
+VERSION = '1.32'
 
 install_requires = ['psutil', 'colorama', 'six','langchain-core','langchain','langchain-openai','langchain-anthropic','langchain-deepseek']
 extras_require = {':python_version<"3.4"': ['pathlib2'],
@@ -52,7 +52,7 @@ else:
                   'fuck = thefuck.entrypoints.not_configured:main',
                   'thefuck_generate = thefuck.entrypoints.generate_command:main']}
 
-setup(name='thefuck',
+setup(name='thefuck-gpt',
       version=VERSION,
       description="Magnificent app which corrects your previous console command",
       long_description=long_description,

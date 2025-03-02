@@ -1,11 +1,9 @@
-# The Fuck [![Version][version-badge]][version-link] [![Build Status][workflow-badge]][workflow-link] [![Coverage][coverage-badge]][coverage-link] [![MIT License][license-badge]](LICENSE.md)
+# TheFuck-GPT [![Version][version-badge]][version-link] [![Build Status][workflow-badge]][workflow-link] [![Coverage][coverage-badge]][coverage-link] [![MIT License][license-badge]](LICENSE.md)
 
-*The Fuck* is a magnificent app, inspired by a [@liamosaur](https://twitter.com/liamosaur/)
-[tweet](https://twitter.com/liamosaur/status/506975850596536320),
-that corrects errors in previous console commands.
+*TheFuck-GPT* is a magnificent app that corrects errors in previous console commands using GPT technology, inspired by a [@liamosaur](https://twitter.com/liamosaur/)
+[tweet](https://twitter.com/liamosaur/status/506975850596536320).
 
-
-Is *The Fuck* too slow? [Try the experimental instant mode!](#experimental-instant-mode)
+Is *TheFuck-GPT* too slow? [Try the experimental instant mode!](#experimental-instant-mode)
 
 [![gif with examples][examples-link]][examples-link]
 
@@ -76,6 +74,50 @@ REPL-y 0.3.1
 ...
 ```
 
+If GPT feature is enabled (THEFUCK_GPT='enabled'), it will prioritize using LLM for command correction:
+
+```bash
+➜ pohton -version
+zsh: command not found: pohton
+
+➜ fuck
+Generating...
+python --version [enter/↑/↓/ctrl+c]
+Python 3.9.7
+```
+
+```bash
+➜ kubect get pds -n kube-systm
+zsh: command not found: kubect
+
+➜ fuck
+Generating...
+kubectl get pods -n kube-system [enter/↑/↓/ctrl+c]
+NAME                      READY   STATUS    RESTARTS   AGE
+coredns-787d4945fb-4hv5m 1/1     Running   0          5d
+```
+
+Using fuckgen to generate commands:
+
+```bash
+➜ fuckgen Create an nginx pod using kubectl
+Generating... 
+kubectl run nginxpod --image=nginx [enter/ctrl+c]
+pod/nginxpod created
+```
+
+```bash 
+➜ fuckgen List pods from all namespaces 
+Generating... 
+kubectl get pods --all-namespaces [enter/ctrl+c]
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-787d4945fb-4hv5m          1/1     Running   0          5d
+kube-system   etcd-master                       1/1     Running   0          5d
+...
+```
+
+If you're not sure how to write a command, you can describe what you want to do in natural language, and fuckgen will help generate the correct command format.
+
 If you're not afraid of blindly running corrected commands, the
 `require_confirmation` [settings](#settings) option can be disabled:
 
@@ -97,16 +139,17 @@ Reading package lists... Done
 2. [Installations](#installation)
 3. [Updating](#updating)
 4. [How it works](#how-it-works)
-5. [Creating your own rules](#creating-your-own-rules)
-6. [Settings](#settings)
-7. [Third party packages with rules](#third-party-packages-with-rules)
-8. [Experimental instant mode](#experimental-instant-mode)
-9. [Developing](#developing)
-10. [License](#license-mit)
+5. [GPT Features](#gpt-features)
+6. [Creating your own rules](#creating-your-own-rules)
+7. [Settings](#settings)
+8. [Third party packages with rules](#third-party-packages-with-rules)
+9. [Experimental instant mode](#experimental-instant-mode)
+10. [Developing](#developing)
+11. [License](#license-mit)
 
 ## Requirements
 
-- python (3.5+)
+- python (3.8+)
 - pip
 - python-dev
 
@@ -114,38 +157,10 @@ Reading package lists... Done
 
 ## Installation
 
-On macOS or Linux, you can install *The Fuck* via [Homebrew][homebrew]:
+Install *TheFuck-GPT*  by using `pip`:
 
 ```bash
-brew install thefuck
-```
-
-On Ubuntu / Mint, install *The Fuck* with the following commands:
-```bash
-sudo apt update
-sudo apt install python3-dev python3-pip python3-setuptools
-pip3 install thefuck --user
-```
-
-On FreeBSD, install *The Fuck* with the following commands:
-```bash
-pkg install thefuck
-```
-
-On ChromeOS, install *The Fuck* using [chromebrew](https://github.com/skycocker/chromebrew) with the following command:
-```bash
-crew install thefuck
-```
-
-On Arch based systems, install *The Fuck* with the following command:
-```
-sudo pacman -S thefuck
-```
-
-On other systems, install *The Fuck*  by using `pip`:
-
-```bash
-pip install thefuck
+pip install thefuck-gpt
 ```
 
 [Alternatively, you may use an OS package manager (OS X, Ubuntu, Arch).](https://github.com/nvbn/thefuck/wiki/Installation)
@@ -182,23 +197,24 @@ fuck -r
 ## Updating
 
 ```bash
-pip3 install thefuck --upgrade
+pip3 install thefuck-gpt --upgrade
 ```
 
-**Note: Alias functionality was changed in v1.34 of *The Fuck***
+**Note: Alias functionality was changed in v1.34 of *TheFuck-GPT***
 
 ## Uninstall
 
-To remove *The Fuck*, reverse the installation process:
+To remove *TheFuck-GPT*, reverse the installation process:
 - erase or comment *thefuck* alias line from your Bash, Zsh, Fish, Powershell, tcsh, ... shell config
 - use your package manager (brew, pip3, pkg, crew, pip) to uninstall the binaries
 
 ## How it works
 
-*The Fuck* attempts to match the previous command with a rule. If a match is
+*TheFuck-GPT* attempts to match the previous command with a rule. If a match is
 found, a new command is created using the matched rule and executed. The
 following rules are enabled by default:
 
+* `intelligence` &ndash; uses LLM technology to intelligently correct erroneous commands
 * `adb_unknown_command` &ndash; fixes misspelled commands like `adb logcta`;
 * `ag_literal` &ndash; adds `-Q` to `ag` when suggested;
 * `aws_cli` &ndash; fixes misspelled commands like `aws dynamdb scan`;
@@ -372,13 +388,20 @@ The following rules are enabled by default on specific platforms only:
 * `pacman_not_found` &ndash; fixes package name with `pacman`, `yay`, `pikaur` or `yaourt`.
 * `yum_invalid_operation` &ndash; fixes invalid `yum` calls, like `yum isntall vim`;
 
-The following commands are bundled with *The Fuck*, but are not enabled by
+The following commands are bundled with *TheFuck-GPT*, but are not enabled by
 default:
 
 * `git_push_force` &ndash; adds `--force-with-lease` to a `git push` (may conflict with `git_push_pull`);
 * `rm_root` &ndash; adds `--no-preserve-root` to `rm -rf /` command.
 
 ##### [Back to Contents](#contents)
+
+## GPT Features
+
+TheFuck-GPT enhances the original project by integrating GPT capabilities for more intelligent command correction and generation:
+
+### Command Correction
+Uses GPT to understand and fix complex command errors:
 
 ## Creating your own rules
 
@@ -437,7 +460,7 @@ requires_output = True
 
 ## Settings
 
-Several *The Fuck* parameters can be changed in the file `$XDG_CONFIG_HOME/thefuck/settings.py`
+Several *TheFuck-GPT* parameters can be changed in the file `$XDG_CONFIG_HOME/thefuck/settings.py`
 (`$XDG_CONFIG_HOME` defaults to `~/.config`):
 
 * `rules` &ndash; list of enabled rules, by default `thefuck.const.DEFAULT_RULES`;
@@ -486,6 +509,15 @@ rule with lower `priority` will be matched first;
 * `THEFUCK_SLOW_COMMANDS` &ndash; list of slow commands, like `lein:gradle`;
 * `THEFUCK_NUM_CLOSE_MATCHES` &ndash; the maximum number of close matches to suggest, like `5`.
 * `THEFUCK_EXCLUDED_SEARCH_PATH_PREFIXES` &ndash; path prefixes to ignore when searching for commands, by default `[]`.
+* `THEFUCK_GPT` &ndash; enables or disables LLM-powered command correction, `enabled/disabled`.
+* `THEFUCK_MODEL_PROVIDER` &ndash; selects LLM provider, `openai/deepseek`.
+* `OPENAI_API_KEY` &ndash; API key for OpenAI services.
+* `OPENAI_BASE_URL` &ndash; base URL for OpenAI API calls, default `https://api.openai.com/`.
+* `OPENAI_MODEL` &ndash; OpenAI model to use, default `o3-mini`.
+* `OPENAI_TEMPERATURE` &ndash; temperature parameter for OpenAI, default `0.7`.
+* `DEEPSEEK_API_KEY` &ndash; API key for Deepseek services.
+* `DEEPSEEK_MODEL` &ndash; Deepseek model to use, default `deepseek-chat`.
+* `DEEPSEEK_TEMPERATURE` &ndash; temperature parameter for Deepseek, default `0.7`.
 
 For example:
 
@@ -498,6 +530,10 @@ export THEFUCK_NO_COLORS='false'
 export THEFUCK_PRIORITY='no_command=9999:apt_get=100'
 export THEFUCK_HISTORY_LIMIT='2000'
 export THEFUCK_NUM_CLOSE_MATCHES='5'
+export THEFUCK_GPT='enabled'
+export THEFUCK_MODEL_PROVIDER='openai'
+export OPENAI_API_KEY='your_openai_api_key'
+export OPENAI_MODEL='o3-mini'
 ```
 
 ##### [Back to Contents](#contents)
@@ -519,14 +555,14 @@ thefuck_contrib_foo
   setup.py
 ```
 
-*The Fuck* will find rules located in the `rules` module.
+*TheFuck-GPT* will find rules located in the `rules` module.
 
 ##### [Back to Contents](#contents)
 
 ## Experimental instant mode
 
-The default behavior of *The Fuck* requires time to re-run previous commands.
-When in instant mode, *The Fuck* saves time by logging output with [script](https://en.wikipedia.org/wiki/Script_(Unix)),
+The default behavior of *TheFuck-GPT* requires time to re-run previous commands.
+When in instant mode, *TheFuck-GPT* saves time by logging output with [script](https://en.wikipedia.org/wiki/Script_(Unix)),
 then reading the log.
 
 [![gif with instant mode][instant-mode-gif-link]][instant-mode-gif-link]
@@ -552,15 +588,25 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 Project License can be found [here](LICENSE.md).
 
 
-[version-badge]:   https://img.shields.io/pypi/v/thefuck.svg?label=version
-[version-link]:    https://pypi.python.org/pypi/thefuck/
-[workflow-badge]:  https://github.com/nvbn/thefuck/workflows/Tests/badge.svg
-[workflow-link]:   https://github.com/nvbn/thefuck/actions?query=workflow%3ATests
-[coverage-badge]:  https://img.shields.io/coveralls/nvbn/thefuck.svg
-[coverage-link]:   https://coveralls.io/github/nvbn/thefuck
+[version-badge]:   https://img.shields.io/pypi/v/thefuck-gpt.svg?label=version
+[version-link]:    https://pypi.python.org/pypi/thefuck-gpt/
+[workflow-badge]:  https://github.com/nvbn/thefuck-gpt/workflows/Tests/badge.svg
+[workflow-link]:   https://github.com/nvbn/thefuck-gpt/actions?query=workflow%3ATests
+[coverage-badge]:  https://img.shields.io/coveralls/nvbn/thefuck-gpt.svg
+[coverage-link]:   https://coveralls.io/github/nvbn/thefuck-gpt
 [license-badge]:   https://img.shields.io/badge/license-MIT-007EC7.svg
-[examples-link]:   https://raw.githubusercontent.com/nvbn/thefuck/master/example.gif
-[instant-mode-gif-link]:   https://raw.githubusercontent.com/nvbn/thefuck/master/example_instant_mode.gif
+[examples-link]:   https://raw.githubusercontent.com/nvbn/thefuck-gpt/master/example.gif
+[instant-mode-gif-link]:   https://raw.githubusercontent.com/nvbn/thefuck-gpt/master/example_instant_mode.gif
 [homebrew]:        https://brew.sh/
 
 ##### [Back to Contents](#contents)
+````
+# Required
+export THEFUCK_GPT='enabled'
+export THEFUCK_MODEL_PROVIDER='openai'
+export OPENAI_API_KEY='your_openai_api_key'
+
+# Optional
+export OPENAI_MODEL='o3-mini'           # Default: o3-mini
+export OPENAI_BASE_URL='custom_url'     # Default: https://api.openai.com/
+export OPENAI_TEMPERATURE=0.7           # Default: 0.7

@@ -17,7 +17,7 @@ DANGEROUS_PATTERNS = [
 
 def match(command: Command) -> bool:
     """Match all commands not handled by other rules."""
-    if settings.intelligence.upper() != "TRUE":
+    if settings.intelligence.upper() != "ENABLED":
         return False
     return command.script_parts[0] not in ['fuck', 'thefuck']
 
