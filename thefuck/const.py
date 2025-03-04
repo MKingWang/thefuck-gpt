@@ -50,6 +50,7 @@ DEFAULT_SETTINGS = {'rules': DEFAULT_RULES,
                     'openai_base_url': 'https://api.openai.com/',
                     'openai_model': 'o3-mini',
                     'deepseek_model': 'deepseek-chat',
+                    'ollama_base_url': 'http://localhost:11434',
                     'temperature': 0.7}
 
 ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
@@ -75,7 +76,13 @@ ENV_TO_ATTR = {'THEFUCK_RULES': 'rules',
                'OPENAI_TEMPERATURE': 'temperature',
                'DEEPSEEK_API_KEY': 'deepseek_api_key',
                'DEEPSEEK_MODEL': 'deepseek_model',
-               'DEEPSEEK_TEMPERATURE': 'temperature'}
+               'DEEPSEEK_TEMPERATURE': 'temperature',
+               'SILICONFLOW_API_KEY': 'siliconflow_api_key',
+               'SILICONFLOW_MODEL': 'siliconflow_model',
+               'SILICONFLOW_TEMPERATURE': 'temperature',
+               'OLLAMA_BASE_URL': 'ollama_base_url',
+               'OLLAMA_MODEL': 'ollama_model',
+               'OLLAMA_TEMPERATURE': 'temperature'}
 
 SETTINGS_HEADER = u"""# The Fuck settings file
 #

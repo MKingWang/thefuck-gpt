@@ -403,6 +403,53 @@ TheFuck-GPT enhances the original project by integrating GPT capabilities for mo
 ### Command Correction
 Uses GPT to understand and fix complex command errors:
 
+```bash
+➜ kubect get pds -n kube-systm
+zsh: command not found: kubect
+
+➜ fuck
+Generating...
+kubectl get pods -n kube-system [enter/↑/↓/ctrl+c]
+NAME                      READY   STATUS    RESTARTS   AGE
+coredns-787d4945fb-4hv5m 1/1     Running   0          5d
+```
+
+### Supported LLM Providers
+
+TheFuck-GPT now supports multiple LLM providers:
+
+1. **OpenAI** - Cloud-based API with various models
+2. **Deepseek** - Alternative cloud API provider
+3. **SiliconFlow** - OpenAI-compatible API service
+4. **Ollama** - Self-hosted, local LLM solution
+
+You can configure your preferred provider using environment variables. See the [Settings](#settings) section for detailed configuration examples.
+
+### Natural Language Command Generation
+
+Use `fuckgen` to generate commands from natural language descriptions:
+
+```bash
+➜ fuckgen Create an nginx pod using kubectl
+Generating... 
+kubectl run nginxpod --image=nginx [enter/ctrl+c]
+pod/nginxpod created
+```
+
+```bash 
+➜ fuckgen List pods from all namespaces 
+Generating... 
+kubectl get pods --all-namespaces [enter/ctrl+c]
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-787d4945fb-4hv5m          1/1     Running   0          5d
+kube-system   etcd-master                       1/1     Running   0          5d
+...
+```
+
+If you're not sure how to write a command, you can describe what you want to do in natural language, and fuckgen will help generate the correct command format.
+
+##### [Back to Contents](#contents)
+
 ## Creating your own rules
 
 To add your own rule, create a file named `your-rule-name.py`
@@ -518,6 +565,12 @@ rule with lower `priority` will be matched first;
 * `DEEPSEEK_API_KEY` &ndash; API key for Deepseek services.
 * `DEEPSEEK_MODEL` &ndash; Deepseek model to use, default `deepseek-chat`.
 * `DEEPSEEK_TEMPERATURE` &ndash; temperature parameter for Deepseek, default `0.7`.
+* `SILICONFLOW_API_KEY` &ndash; API key for SiliconFlow services.
+* `SILICONFLOW_MODEL` &ndash; SiliconFlow model to use, default `siliconflow_model`.
+* `SILICONFLOW_TEMPERATURE` &ndash; Temperature parameter for SiliconFlow, default `0.7`.
+* `OLLAMA_MODEL` &ndash; Ollama model to use, default `ollama_model`.
+* `OLLAMA_BASE_URL` &ndash; Base URL for Ollama API calls, default `http://localhost:11434`.
+* `OLLAMA_TEMPERATURE` &ndash; Temperature parameter for Ollama, default `0.7`.
 
 For example:
 
@@ -531,9 +584,28 @@ export THEFUCK_PRIORITY='no_command=9999:apt_get=100'
 export THEFUCK_HISTORY_LIMIT='2000'
 export THEFUCK_NUM_CLOSE_MATCHES='5'
 export THEFUCK_GPT='enabled'
-export THEFUCK_MODEL_PROVIDER='openai'
+export THEFUCK_MODEL_PROVIDER='openai'  # or 'siliconflow', 'ollama', 'deepseek'
+
+# OpenAI configuration (only takes effect when THEFUCK_MODEL_PROVIDER is set to openai)
 export OPENAI_API_KEY='your_openai_api_key'
 export OPENAI_MODEL='o3-mini'
+export OPENAI_BASE_URL='https://api.openai.com/'
+export OPENAI_TEMPERATURE=0.7
+
+# SiliconFlow configuration (only takes effect when THEFUCK_MODEL_PROVIDER is set to siliconflow)
+export SILICONFLOW_API_KEY='siliconflow_api_key'
+export SILICONFLOW_MODEL='siliconflow_model'
+export SILICONFLOW_TEMPERATURE=0.7
+
+# Ollama configuration (only takes effect when THEFUCK_MODEL_PROVIDER is set to ollama)
+export OLLAMA_MODEL='ollama_model'
+export OLLAMA_BASE_URL='http://localhost:11434'
+export OLLAMA_TEMPERATURE=0.7
+
+# Deepseek configuration (only takes effect when THEFUCK_MODEL_PROVIDER is set to deepseek)
+export DEEPSEEK_API_KEY='deepseek_api_key'
+export DEEPSEEK_MODEL='deepseek-chat'
+export DEEPSEEK_TEMPERATURE=0.7
 ```
 
 ##### [Back to Contents](#contents)

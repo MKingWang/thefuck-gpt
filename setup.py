@@ -31,9 +31,9 @@ elif (3, 0) < version < (3, 5):
           ' ({}.{} detected).'.format(*version))
     sys.exit(-1)
 
-VERSION = '1.33'
+VERSION = '1.35'
 
-install_requires = ['psutil', 'colorama', 'six','langchain-core','langchain','langchain-openai','langchain-anthropic','langchain-deepseek']
+install_requires = ['psutil', 'colorama', 'six', 'setuptools', 'langchain-core','langchain','langchain-openai','langchain-anthropic','langchain-deepseek','langchain-ollama']
 extras_require = {':python_version<"3.4"': ['pathlib2'],
                   ':python_version<"3.3"': ['backports.shutil_get_terminal_size'],
                   ':python_version<="2.7"': ['decorator<5', 'pyte<0.8.1'],

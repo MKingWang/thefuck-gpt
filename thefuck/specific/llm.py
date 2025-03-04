@@ -7,6 +7,7 @@ import sys
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama.llms import OllamaLLM
 from thefuck.conf import settings
 import traceback
 
@@ -50,12 +51,14 @@ class LLMFactory:
                 'temperature': lambda: float(os.environ.get('THEFUCK_TEMPERATURE', settings.temperature)),
             }
         },
-        'anthropic': {
+        'siliconflow': {
             'model_configs': {
-                'model': lambda: os.environ.get('ANTHROPIC_MODEL', settings.anthropic_model),
-                'api_key': lambda: os.environ.get('THEFUCK_ANTHROPIC_API_KEY', settings.anthropic_api_key),
-                'temperature': lambda: float(os.environ.get('THEFUCK_ANTHROPIC_TEMPERATURE', settings.anthropic_temperature)),
-            }
+                'model': lambda: os.environ.get('SILICONFLOW_MODEL', settings.siliconflow_model),
+                'api_key': lambda: os.environ.get('SILICONFLOW_API_KEY', settings.siliconflow_api_key),
+                'temperature': lambda: float(os.environ.get('THEFUCK_TEMPERATURE', settings.temperature)),
+                'base_url': lambda: "https://api.siliconflow.cn/"
+            },
+            'openai_compatible': True
         },
         'deepseek': {
             'model_configs': {
@@ -63,12 +66,20 @@ class LLMFactory:
                 'api_key': lambda: os.environ.get('DEEPSEEK_API_KEY', settings.deepseek_api_key),
                 'temperature': lambda: float(os.environ.get('THEFUCK_TEMPERATURE', settings.temperature)),
             }
+        },
+        'ollama': {
+            'model_configs': {
+                'model': lambda: os.environ.get('OLLAMA_MODEL', settings.ollama_model),
+                'temperature': lambda: float(os.environ.get('THEFUCK_TEMPERATURE', settings.temperature)),
+                'base_url': lambda: os.environ.get('OLLAMA_BASE_URL', settings.ollama_base_url),
+            }
         }
     }
 
     @classmethod
     def create(cls) -> Any:
         provider = os.environ.get('THEFUCK_MODEL_PROVIDER', settings.model_provider)
+        provider = provider.lower()
         if provider not in cls._supported_providers:
             raise ValueError(f"Unsupported LLM provider: {provider}")
 
@@ -77,6 +88,12 @@ class LLMFactory:
             key: getter() 
             for key, getter in provider_config['model_configs'].items()
         }
+
+        if provider == "ollama":
+            return OllamaLLM(**config)
+
+        if provider_config.get('openai_compatible', False):
+            provider = "openai"
         
         return init_chat_model(
             model_provider=provider,

@@ -27,9 +27,21 @@ class Bash(Generic):
                 unset TF_HISTORY;
                 export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
                 {alter_history}
+            }};
+            function {gen_name} () {{
+                TF_PYTHONIOENCODING=$PYTHONIOENCODING;
+                export TF_SHELL=bash;
+                export TF_ALIAS={gen_name};
+                export PYTHONIOENCODING=utf-8;
+                TF_CMD=$(
+                    thefuck_generate "$@"
+                ) && eval $TF_CMD;
+                export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
+                {alter_history}
             }}
         '''.format(
             name=alias_name,
+            gen_name=os.environ.get('THEFUCK_GEN_ALIAS', 'fuckgen'),
             argument_placeholder=ARGUMENT_PLACEHOLDER,
             alter_history=('history -s $TF_CMD;'
                            if settings.alter_history else ''))
