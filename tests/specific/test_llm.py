@@ -1,29 +1,21 @@
 import os
 import json
 import pytest
+from unittest.mock import patch, Mock
 from thefuck.specific.llm import (
     generate_llm_response,
     LLMFactory,
     LLMCache,
+    call_llm_api
 )
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-
-class DummyChain:
-    def __or__(self, other):
-        return self
-    def invoke(self, input_dict):
-        return "dummy response"
 
 @pytest.fixture(autouse=True)
 def patch_llm_components(monkeypatch):
-    monkeypatch.setattr(
-        ChatPromptTemplate, "from_messages", lambda messages: DummyChain()
-    )
-    monkeypatch.setattr(
-        StrOutputParser, "__new__", lambda cls, *args, **kwargs: DummyChain()
-    )
-    monkeypatch.setattr(LLMFactory, "create", classmethod(lambda cls: DummyChain()))
+    # 模拟API调用返回固定结果
+    def mock_call_llm_api(*args, **kwargs):
+        return "dummy response"
+    
+    monkeypatch.setattr('thefuck.specific.llm.call_llm_api', mock_call_llm_api)
 
 @pytest.mark.parametrize("provider,expected_model_provider", [
     ("siliconflow", "openai"), 
@@ -52,16 +44,40 @@ def test_generate_llm_response_providers(monkeypatch, provider, expected_model_p
     
     monkeypatch.setenv("HOME", str(tmp_path))
     
-    response = generate_llm_response(context, user_prompt, system_prompts, use_cache=False)
+    # 测试不使用缓存的情况
+    with patch('thefuck.specific.llm.LLMFactory.get_provider_info') as mock_provider_info:
+        mock_provider_info.return_value = (expected_model_provider, {}, "https://api.example.com/v1/completions")
+        with patch('thefuck.specific.llm.LLMFactory.create_payload_and_headers') as mock_create_payload:
+            mock_create_payload.return_value = {
+                "payload": {}, 
+                "headers": {}
+            }
+            
+            response = generate_llm_response(context, user_prompt, system_prompts, use_cache=False)
+            
+            print("Generated Response (no cache):", response)
+            assert response == "dummy response"
+            
+            # 验证调用参数
+            if provider == "siliconflow":
+                mock_provider_info.assert_called_with("siliconflow")
+            else:
+                mock_provider_info.assert_called_with("ollama")
     
-    print("Generated Response (no cache):", response)
+    # 测试使用缓存的情况
+    with patch('thefuck.specific.llm.LLMFactory.get_provider_info') as mock_provider_info:
+        mock_provider_info.return_value = (expected_model_provider, {}, "https://api.example.com/v1/completions")
+        with patch('thefuck.specific.llm.LLMFactory.create_payload_and_headers') as mock_create_payload:
+            mock_create_payload.return_value = {
+                "payload": {}, 
+                "headers": {}
+            }
+            
+            response_cache = generate_llm_response(context, user_prompt, system_prompts, use_cache=True)
+            print("Generated Response (with cache):", response_cache)
+            assert response_cache == "dummy response"
     
-    assert response == "dummy response"
-    
-    response_cache = generate_llm_response(context, user_prompt, system_prompts, use_cache=True)
-    print("Generated Response (with cache):", response_cache)
-    assert response_cache == "dummy response"
-    
+    # 验证缓存
     cache_data = {
         "context": context,
         "system_prompts": system_prompts,
@@ -74,3 +90,40 @@ def test_generate_llm_response_providers(monkeypatch, provider, expected_model_p
     cached = cache_instance.get(prompt_hash)
     print("Cached Response:", cached)
     assert cached == "dummy response"
+
+def test_call_llm_api():
+    # 测试 OpenAI 兼容的 API
+    with patch('requests.post') as mock_post:
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            "choices": [{"message": {"content": "ls -la"}}]
+        }
+        mock_post.return_value = mock_response
+        
+        result = call_llm_api(
+            "openai", 
+            "https://api.example.com/v1/chat/completions",
+            {"model": "gpt-3.5-turbo", "messages": []},
+            {"Authorization": "Bearer test"}
+        )
+        
+        assert result == "ls -la"
+        mock_post.assert_called_once()
+    
+    # 测试 Ollama API
+    with patch('requests.post') as mock_post:
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            "message": {"content": "ls -la"}
+        }
+        mock_post.return_value = mock_response
+        
+        result = call_llm_api(
+            "ollama", 
+            "http://localhost:11434/api/chat",
+            {"model": "llama2", "messages": []},
+            {"Content-Type": "application/json"}
+        )
+        
+        assert result == "ls -la"
+        mock_post.assert_called_once()
